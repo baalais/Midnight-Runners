@@ -1,7 +1,7 @@
 import './Styles.css';
 import Head from './head';
-import Header from './common/header';
-import Footer from './common/footer';
+import Header from './shop/header';
+import Footer from './shop/footer';
 
 export default function RootLayout({
   children,
