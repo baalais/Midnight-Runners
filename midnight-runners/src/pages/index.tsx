@@ -15,7 +15,7 @@ export default function Home() {
       <Header />
       <div className={styles.container}>
         <main className={styles.main}>
-          <img className={styles.mainPhoto} src="https://via.placeholder.com/600x400" alt="Placeholder" />
+          <link className={styles.mainPhoto} href="https://via.placeholder.com/600x400"/>
           <p className={styles.description}>
             Midnight Runners is a car club based in Latvia. We host monthly meetings and events, open to all car enthusiasts. Everyone is welcome! To join, simply send us a DM on our social media platforms.
           </p>
