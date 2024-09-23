@@ -1,29 +1,147 @@
+/* Container for the whole page layout */
 .container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+/* Title for the album page */
+.albumTitle {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+/* Grid layout with two items per row (two columns) */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  grid-gap: 20px;
+  padding: 0 20px;
+}
+
+/* Each media item container (for both images and videos) */
+.mediaItem {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+/* Style for images */
+.image {
+  width: 100%;
+  height: auto;
+  max-height: 200px; /* Restrict height to ensure images are smaller */
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Style for videos */
+.video {
+  width: 100%;
+  height: auto;
+  max-height: 200px; /* Restrict height to ensure videos are smaller */
+  object-fit: cover;
+  border-radius: 12px;
+  background-color: black;
+}
+
+/* Hover effect for media items */
+.mediaItem:hover {
+  transform: scale(1.05); /* Slight hover zoom */
+}
+
+/* Modal for full-screen media with blur background */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(20px); /* Blurry background */
+  background-color: rgba(0, 0, 0, 0.7); /* Dark transparent overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  overflow-y: auto; /* Allow scrolling if content exceeds viewport height */
+  padding: 20px; /* Add some padding around the modal */
+}
+
+/* Modal content (image or video) centered with no background */
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 80%;
+  max-height: 80%;
+  text-align: center;
+}
+
+/* Full-screen image styling */
+.modalImage {
+  max-width: 100%;
+  max-height: 70vh; /* Adjusted to fit within viewport */
+  object-fit: contain;
+  margin-bottom: 20px;
+  border-radius: 12px;
+}
+
+/* Full-screen video styling */
+.modalVideo {
+  max-width: 100%;
+  max-height: 70vh; /* Adjusted to fit within viewport */
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+/* Caption under media with improved visibility */
+.caption {
+  font-size: 1.2rem;
+  color: #fff; /* White text for visibility */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 90%; /* Limit text width */
+  margin-bottom: 20px;
+}
+
+/* Enhanced Instagram link button */
+.instagramLink {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.instagramLink:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr; /* One column layout for smaller screens */
   }
-  
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+
+  .modalContent {
+    max-width: 95%;
+    max-height: 90%;
   }
-  
-  .mainPhoto {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
+
+  .modalImage, .modalVideo {
+    max-height: 60vh; /* Further reduce media size for smaller screens */
   }
-  
-  .description {
-    margin-top: 20px;
-    font-size: 18px;
-    color: #333;
-    text-align: center;
-    max-width: 600px;
-  }
-  
+}

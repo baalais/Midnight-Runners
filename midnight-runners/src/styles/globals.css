@@ -12,3 +12,18 @@
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
   }
+
+  /* Style for the links wrapping the images */
+a {
+  display: block;
+}
+
+/* Prevent underlining of links on hover */
+a:hover {
+  text-decoration: none;
+}
+
+/* Prevent underlining of links on hover */
+.mediaItem a:hover {
+  text-decoration: none;
+}
