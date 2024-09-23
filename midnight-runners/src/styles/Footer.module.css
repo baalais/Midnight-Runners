@@ -1,0 +1,26 @@
+.footer {
+    padding: 1rem;
+    background-color: #f1f1f1;
+    text-align: center;
+    border-top: 1px solid #ddd;
+  }
+  
+  .socialMedia {
+    margin-bottom: 1rem;
+  }
+  
+  .socialMedia a {
+    margin: 0 0.5rem;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .socialMedia a:hover {
+    text-decoration: underline;
+  }
+  
+  .developer {
+    font-size: 0.875rem;
+    color: #555;
+  }
+  
