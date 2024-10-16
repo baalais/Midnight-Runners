@@ -1,24 +1,24 @@
-import Head from 'next/head';
-//import React, { useEffect, useState } from 'react';
-import Header from '../../components/header'; // Ensure the correct casing
-import Footer from '../../components/footer'; // Ensure the correct casing
-import styles from '../../styles/ShopPage.module.css'; // Adjust the path as needed
+import Head from "next/head";
+import Footer from "../../components/footer";
+import dynamic from 'next/dynamic';
+import Header from "~/components/header";
 
-export default function Shop() {
+const InstagramFeed = dynamic(() => import('../../components/InstagramFeed'), { ssr: false });
+
+const SocialPage = () => {
   return (
-    <>
+    <div>
       <Head>
-        <title>Shop</title>
-        <meta name="description" content="Shop page with Printful products" />
-        <link rel="icon" href="/favicon.ico" />
+        <title>Follow Us on Instagram</title>
       </Head>
       <Header />
-      <div className={styles.container}>
-        <div className={styles.main}>
-          <h1>Shop Page</h1>
-        </div>
+      <div>
+        <h1>Follow Us on Instagram</h1>
+        <InstagramFeed username="midnightrunnerslatvija" /> {/* Replace with your actual username */}
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
+
+export default SocialPage;

@@ -8,6 +8,27 @@ await import("./src/env.js");
 const config = {
   reactStrictMode: true,
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+      },
+      {
+        protocol: "https",
+        hostname: "static.wixstatic.com",
+      },
+      {
+        protocol: "https",
+        hostname: "people.pic1.co",
+      },
+      {
+        protocol: "https",
+        hostname: "app-uploads-cdn.fera.ai",
+      },
+    ],
+  },
+
   /**
    * If you are using `appDir` then you must comment the below `i18n` config out.
    *
