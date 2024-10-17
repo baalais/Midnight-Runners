@@ -1,25 +1,16 @@
-import Head from "next/head";
-import React from "react";
-import Header from "../../components/header";
-import Footer from "../../components/footer";
-import styles from "../../styles/GamePage.module.css"; // Adjust the path as needed
+import React from 'react';
 
-export default function Album() {
+const GamePage = () => {
   return (
-    <>
-      <Head>
-        <title>Game</title>
-        <meta name="description" content="Album page" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Header />
-      <div className={styles.container}>
-        <main className={styles.main}>
-          <h1>Game Page</h1>
-          {/* Content for the Album page */}
-        </main>
-      </div>
-      <Footer />
-    </>
+    <div className="game-container">
+      <iframe
+        src="https://www.y8.com/games/extreme_car_driving_simulator"
+        width="800"
+        height="600"
+        frameBorder="0"
+      ></iframe>
+    </div>
   );
-}
+};
+
+export default GamePage;

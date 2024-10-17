@@ -1,43 +1,27 @@
-/* eslint-disable @typescript-eslint/unbound-method */
-"use client";
+// components/Pagination.tsx
+import React from 'react';
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-const Pagination = ({
-  currentPage,
-  hasPrev,
-  hasNext,
-}: {
+interface PaginationProps {
   currentPage: number;
   hasPrev: boolean;
   hasNext: boolean;
-}) => {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
+  onPageChange: (page: number) => void; // Function to handle page changes
+}
 
-  const createPageUrl = (pageNumber: number) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", pageNumber.toString());
-    replace(`${pathname}?${params.toString()}`);
-  };
-
+const Pagination: React.FC<PaginationProps> = ({ currentPage, hasPrev, hasNext, onPageChange }) => {
   return (
-    <div className="mt-12 flex justify-between w-full">
-      <button
-        className="rounded-md bg-lama text-white p-2 text-sm w-24 cursor-pointer disabled:cursor-not-allowed disabled:bg-pink-200"
-        disabled={!hasPrev}
-        onClick={() => createPageUrl(currentPage - 1)}
-      >
-        Previous
-      </button>
-      <button
-        className="rounded-md bg-lama text-white p-2 text-sm w-24 cursor-pointer disabled:cursor-not-allowed disabled:bg-pink-200"
-        disabled={!hasNext}
-        onClick={() => createPageUrl(currentPage + 1)}
-      >
-        Next
-      </button>
+    <div className="flex justify-center mt-4">
+      {hasPrev && (
+        <button onClick={() => onPageChange(currentPage - 1)} className="px-4 py-2 border rounded-lg mr-2">
+          Previous
+        </button>
+      )}
+      <span className="px-4">{`Page ${currentPage}`}</span>
+      {hasNext && (
+        <button onClick={() => onPageChange(currentPage + 1)} className="px-4 py-2 border rounded-lg ml-2">
+          Next
+        </button>
+      )}
     </div>
   );
 };

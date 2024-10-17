@@ -1,29 +1,110 @@
-  .container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  
-  .mainPhoto {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-  }
-  
-  .description {
-    margin-top: 20px;
-    font-size: 18px;
-    color: #333;
-    text-align: center;
-    max-width: 600px;
-  }
-  
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 0;
+  background-color: #ffffff;
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  background: url('/landing2.jpg') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.heroText {
+  position: absolute;
+  z-index: 2;
+  color: white;
+  font-family: 'Helvetica Neue', sans-serif;
+  animation: slideInFromLeft 1s ease-in-out;
+}
+
+@keyframes slideInFromLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.heroImage {
+  width: 100%;
+  height: 600px;
+  object-fit: cover;
+  opacity: 0.7;
+}
+
+.main {
+  width: 100%;
+  padding: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  animation: fadeInUp 1s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.sectionImage {
+  width: 40%;
+  border-radius: 10px;
+  margin-right: 20px;
+}
+
+.sectionContent {
+  width: 60%;
+  text-align: left;
+}
+
+.section h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.section p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #0070f3;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #005bb5;
+}

@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import NavIcons from "./NavIcons"; // Import the NavIcons component
-import mr from "../img/mrmr.png"; // Adjust the path as needed
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false); // State for the menu
@@ -15,10 +13,10 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-5 bg-gray-800 text-white">
-      {/* Logo */}
-      <div className="text-2xl font-bold">
-        <Image src={mr} alt="Logo" priority/>
+    <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-5 bg-gray-800 text-white shadow-md">
+      {/* Logo Text */}
+      <div className="text-2xl font-bold cursor-pointer">
+        Midnight Runners
       </div>
 
       {/* Burger Menu Icon */}
