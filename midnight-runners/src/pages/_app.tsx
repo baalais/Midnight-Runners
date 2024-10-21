@@ -6,10 +6,10 @@ import "~/styles/globals.css";
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <div className={GeistSans.className}>
+      {/* Renderēt lapas komponenti ar tās prop vērtībām */}
       <Component {...pageProps} />
     </div>
   );
 };
 
 export default MyApp;
-

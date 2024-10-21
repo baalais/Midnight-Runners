@@ -6,9 +6,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// wixClientServer.ts (Combining everything together)
+// wixClientServer.tsx (Apvienojot visu kopā)
 
-// Import required dependencies
+// Importē nepieciešamās atkarības
 "use client";
 
 import { createClient, OAuthStrategy } from "@wix/sdk";
@@ -18,7 +18,7 @@ import Cookies from "js-cookie";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { redirects } from '@wix/redirects';
 
-// Set up the Wix client using OAuthStrategy
+// Iestata Wix klientu, izmantojot OAuthStrategy
 const refreshToken = JSON.parse(Cookies.get("refreshToken") || "{}");
 
 const wixClient = createClient({
@@ -37,12 +37,12 @@ const wixClient = createClient({
   }),
 });
 
-// Create the context for WixClient
+// Izveido WixClient kontekstu
 export type WixClient = typeof wixClient;
 
 export const WixClientContext = createContext<WixClient>(wixClient);
 
-// Context Provider component
+// Konteksta nodrošinātāja komponents
 export const WixClientContextProvider = ({
   children,
 }: {
@@ -55,26 +55,26 @@ export const WixClientContextProvider = ({
   );
 };
 
-// Function to fetch products from the Wix API
+// Funkcija, lai iegūtu produktus no Wix API
 export const wixClientServer = async () => {
   try {
-    const response = await fetch('YOUR_API_URL'); // Ensure correct API call
-    const textData = await response.text(); // Get raw text response
+    const response = await fetch('YOUR_API_URL'); // Nodrošiniet pareizu API izsaukumu
+    const textData = await response.text(); // Iegūstiet neapstrādātu teksta atbildi
 
-    // Decode the data if URL-encoded
+    // Atkodējiet datus, ja tie ir URL-iekodēti
     const decodedData = decodeURIComponent(textData);
 
-    // Parse the decoded data to JSON
+    // Pārvērst atkodētos datus par JSON
     const jsonData = JSON.parse(decodedData);
 
-    return jsonData;  // Return the parsed object
+    return jsonData;  // Atgriežot analizēto objektu
   } catch (error) {
     console.error('Error in wixClientServer:', error);
     throw error;
   }
 };
 
-// React component to fetch products and display them
+// React komponents produktu iegūšanai un attēlošanai
 const ProductList = ({
   categoryId,
   limit,
@@ -84,35 +84,35 @@ const ProductList = ({
   limit?: number;
   searchParams?: any;
 }) => {
-  const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false); // Ielādes statuss
+  const [products, setProducts] = useState([]); // Saglabā produktus
 
-  // Fetch products using useEffect
+  // Iegūt produktus, izmantojot useEffect
   useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true);
+      setLoading(true); // Sāk ielādi
       try {
         const wixClient = await wixClientServer();
-        // You can handle product query logic here, setting the result to state
-        setProducts(wixClient.products || []);
+        // Šeit varat apstrādāt produktu vaicājuma loģiku, iestatot rezultātu uz stāvokli
+        setProducts(wixClient.products || []); // Saglabā produktus
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching products:", error); // Kļūdu apstrāde
       } finally {
-        setLoading(false);
+        setLoading(false); // Beidz ielādi
       }
     };
 
-    fetchProducts();
+    fetchProducts(); // Izsauc produktu iegūšanas funkciju
   }, [categoryId, limit, searchParams]);
 
   return (
     <div>
       {loading ? (
-        <p>Loading products...</p>
+        <p>Loading products...</p> // Ielādes ziņojums
       ) : (
         <ul>
           {products.map((product: any) => (
-            <li key={product._id}>{product.name}</li>
+            <li key={product._id}>{product.name}</li> // Attēlo produktus
           ))}
         </ul>
       )}

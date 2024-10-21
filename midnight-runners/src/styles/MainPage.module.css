@@ -18,11 +18,10 @@
   position: relative;
   width: 100%;
   height: 600px;
-  background: url('/landing2.jpg') no-repeat center center;
-  background-size: cover;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
   text-align: center;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -31,9 +30,9 @@
 .heroText {
   position: absolute;
   z-index: 2;
-  color: white;
   font-family: 'Helvetica Neue', sans-serif;
   animation: slideInFromLeft 1s ease-in-out;
+  color: #ffffff; /* Ensure text is visible on the image */
 }
 
 @keyframes slideInFromLeft {
@@ -46,6 +45,7 @@
   height: 600px;
   object-fit: cover;
   opacity: 0.7;
+  z-index: 1; /* Ensure the image is behind the text */
 }
 
 .main {

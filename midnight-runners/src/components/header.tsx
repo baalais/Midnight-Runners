@@ -3,28 +3,30 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import NavIcons from "./NavIcons"; // Import the NavIcons component
+import NavIcons from "./NavIcons";
 
 const Header: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false); // State for the menu
+  const [isOpen, setIsOpen] = useState(false); // Stāvoklis izvēlnes atvēršanai/aizvēršanai
 
+  // Funkcija izvēlnes pārslēgšanai
   const toggleMenu = () => {
-    setIsOpen(!isOpen); // Toggle the menu state
+    setIsOpen(!isOpen); // Maina izvēlnes stāvokli
   };
 
   return (
+    // Galvenes sadaļa ar stilizāciju
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center p-5 bg-gray-800 text-white shadow-md">
-      {/* Logo Text */}
+      {/* Logo teksts */}
       <div className="text-2xl font-bold cursor-pointer">
         Midnight Runners
       </div>
 
-      {/* Burger Menu Icon */}
+      {/* Ikona izvēlnes atvēršanai (mobilajām ierīcēm) */}
       <div className="md:hidden" onClick={toggleMenu}>
         {isOpen ? <AiOutlineClose size={30} /> : <AiOutlineMenu size={30} />}
       </div>
 
-      {/* Navigation Links */}
+      {/* Navigācijas saites */}
       <nav
         className={`${
           isOpen ? "flex" : "hidden"
@@ -50,7 +52,7 @@ const Header: React.FC = () => {
             Game
           </button>
         </Link>
-        {/* NavIcons for cart and profile */}
+        {/* NavIcons sadaļa ratiņiem un profilam */}
         <NavIcons />
       </nav>
     </header>

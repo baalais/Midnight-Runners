@@ -18,6 +18,7 @@ const ProductList = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Funkcija produktu iegūšanai
   const fetchProducts = async (page: number) => {
     setLoading(true);
     setError(null);
@@ -29,27 +30,30 @@ const ProductList = () => {
         .skip((page - 1) * PRODUCTS_PER_PAGE)
         .find();
 
-      setProductsData(response.items);
+      setProductsData(response.items); // Saglabā iegūtos produktus
     } catch (error) {
       console.error("Error fetching products:", error);
-      setError("Failed to fetch products. Please try again later.");
+      setError("Failed to fetch products. Please try again later."); // Iestatīt kļūdas ziņojumu
     } finally {
-      setLoading(false);
+      setLoading(false); // Beigt ielādes stāvokli
     }
   };
 
+  // Izsaukt funkciju produktu iegūšanai, kad mainās lapa
   useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage, wixClient]);
 
+  // Ja ielādē, parādīt ielādes komponentu
   if (loading) return <Loading />;
+  // Ja ir kļūda, parādīt kļūdas ziņojumu
   if (error) return <p>{error}</p>;
 
   return (
     <div>
       <Header />
-      {/* Adjust padding based on the measured height of your header */}
-      <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 pt-20"> {/* Increase pt value if necessary */}
+      {/* Pielāgojiet padding atkarībā no jūsu galvenes augstuma */}
+      <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 pt-20"> {/* Palieliniet pt vērtību, ja nepieciešams */}
         <h1 className="text-4xl font-medium mb-6">All Products</h1>
         <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
           {productsData.map((product) => (
@@ -89,6 +93,7 @@ const ProductList = () => {
             </Link>
           ))}
         </div>
+        {/* Pagination komponenta, pašreizējā lapa, iepriekšējā un nākamā lapa */}
         <Pagination currentPage={0} hasPrev={false} hasNext={false} />
       </div>
       <Footer />

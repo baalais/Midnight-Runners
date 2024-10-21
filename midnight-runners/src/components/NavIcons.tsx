@@ -12,36 +12,38 @@ import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
 
 const NavIcons = () => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false); // Statuss groza modalitātes atvēršanai/aizvēršanai
+  const [isLoading, setIsLoading] = useState(false); // Statuss, vai notiek ielāde
 
-  const router = useRouter();
-  const pathName = usePathname();
+  const router = useRouter(); // Navigācijas funkcionalitāte
+  const pathName = usePathname(); // Ceļa nosaukuma iegūšana
 
-  const wixClient = useWixClient();
-  const isLoggedIn = wixClient.auth.loggedIn();
+  const wixClient = useWixClient(); // Wix klienta objekta iegūšana
+  const isLoggedIn = wixClient.auth.loggedIn(); // Pārbaude, vai lietotājs ir pieteicies
 
+  // Funkcija lietotāja izrakstīšanai
   const handleLogout = async () => {
-    setIsLoading(true);
-    Cookies.remove("refreshToken");
-    const { logoutUrl } = await wixClient.auth.logout(window.location.href);
-    setIsLoading(false);
-    router.push(logoutUrl);
+    setIsLoading(true); // Ieslēdz ielādes statusu
+    Cookies.remove("refreshToken"); // Noņem "refreshToken" sīkdatni
+    const { logoutUrl } = await wixClient.auth.logout(window.location.href); // Izsauc izrakstīšanās URL
+    setIsLoading(false); // Izslēdz ielādes statusu
+    router.push(logoutUrl); // Pārsūta uz izrakstīšanās URL
   };
 
-  const { cart, counter, getCart } = useCartStore();
+  const { cart, counter, getCart } = useCartStore(); // Groza stāvokļa pārvaldība
 
   useEffect(() => {
-    getCart(wixClient);
+    getCart(wixClient); // Saņem groza datus no Wix klienta
   }, [wixClient, getCart]);
 
-  // Function to close the CartModal
+  // Funkcija, lai aizvērtu CartModal
   const handleCloseCartModal = () => {
-    setIsCartOpen(false);
+    setIsCartOpen(false); // Aizver groza modalitāti
   };
 
   return (
     <div className="flex items-center gap-4 xl:gap-6 relative">
+      {/* Groza ikona un groza preču skaits */}
       <div
         className="relative cursor-pointer"
         onClick={() => setIsCartOpen((prev) => !prev)}
@@ -51,6 +53,7 @@ const NavIcons = () => {
           {counter}
         </div>
       </div>
+      {/* Ja groza modalitāte ir atvērta, parādīt CartModal */}
       {isCartOpen && <CartModal onClose={handleCloseCartModal} />}
     </div>
   );

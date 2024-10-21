@@ -6,6 +6,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useWixClient } from "../../hooks/useWixClient";
@@ -19,12 +20,14 @@ import Header from "~/components/header";
 import Footer from "~/components/footer";
 import Loading from "../../components/Loading";
 
+// Interfeiss medijam
 interface Media {
   items: {
     url: string;
   }[];
 }
 
+// Interfeiss produktam, kas iegūts no Wix API
 interface Product extends products.GetProductResponse {
   name: string;
   media: Media;
@@ -33,64 +36,63 @@ interface Product extends products.GetProductResponse {
     price: number;
     discountedPrice?: number;
   };
-  variants?: any[];
-  productOptions?: any[];
+  variants?: any[]; // Varianti, ja tādi ir
+  productOptions?: any[]; // Produktu opcijas
   additionalInfoSections?: {
-    title: string;
-    description: string;
+    title: string; // Sekcijas nosaukums
+    description: string; // Sekcijas apraksts
   }[];
 }
 
-const ProductPage = () => {
+const ProductPage: React.FC = () => {
   const router = useRouter();
-  const { slug } = router.query;
-  const wixClient = useWixClient();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isCartModalOpen, setCartModalOpen] = useState(false);
+  const { slug } = router.query; // Iegūst slugu no URL
+  const wixClient = useWixClient(); // Wix klienta konteksts
+  const [product, setProduct] = useState<Product | null>(null); // Produkta stāvoklis
+  const [loading, setLoading] = useState(true); // Ielādes stāvoklis
+  const [error, setError] = useState<string | null>(null); // Kļūdas stāvoklis
+  const [isCartModalOpen, setCartModalOpen] = useState(false); // Karšu modālā loga stāvoklis
 
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!slug) return;
-      setLoading(true);
-      setError(null);
+      if (!slug) return; // Ja nav sluga, neizpilda funkciju
+      setLoading(true); // Iestata ielādes stāvokli
+      setError(null); // Notīra iepriekšējās kļūdas
       try {
         const productsResponse = await wixClient.products
           .queryProducts()
           .eq("slug", slug as string)
-          .find();
+          .find(); // Meklē produktu ar konkrēto slugu
         if (!productsResponse.items[0]) {
-          setError("Product not found.");
+          setError("Product not found."); // Ja produkts nav atrasts
           return;
         }
         const productData = productsResponse.items[0];
-        setProduct(productData);
+        setProduct(productData); // Iestata atrasto produktu
       } catch (error) {
         console.error("Error fetching product:", error);
-        setError("Failed to fetch product. Please try again later.");
+        setError("Failed to fetch product. Please try again later."); // Kļūdas ziņojums
       } finally {
-        setLoading(false);
+        setLoading(false); // Pabeidz ielādes stāvokli
       }
     };
-    fetchProduct();
-  }, [slug, wixClient]);
+    fetchProduct(); // Izsauc funkciju
+  }, [slug, wixClient]); // Atjaunina, kad mainās slug vai wixClient
 
+  // Ielādes vai kļūdas ziņojumi
   if (loading) return <Loading />;
   if (error) return <p className="text-center text-red-600">{error}</p>;
   if (!product) return <p className="text-center text-lg">Product not found.</p>;
 
   const toggleCartModal = () => {
-    setCartModalOpen((prev) => !prev);
+    setCartModalOpen((prev) => !prev); // Maina karšu modālā loga stāvokli
   };
-
-  const HEADER_HEIGHT = "h-20";
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="flex-grow container mx-auto px-4 md:px-8 pt-20 lg:flex lg:flex-row lg:items-start">
-        {/* Image Section */}
+        {/* Attēla sekcija */}
         <div className="w-full lg:w-1/2 lg:sticky top-20">
           <Image
             src={product.media?.mainMedia?.image?.url || "/product.png"}
@@ -100,7 +102,7 @@ const ProductPage = () => {
             className="rounded-lg shadow-lg max-h-90 object-cover"
           />
         </div>
-        {/* Details Section */}
+        {/* Detalizācijas sekcija */}
         <div className="w-full lg:w-1/2 flex flex-col p-6 bg-gray-50 rounded-lg shadow-md">
           <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
           <p
@@ -154,4 +156,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default ProductPage; // Eksportē ProductPage komponentu
