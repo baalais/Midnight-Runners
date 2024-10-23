@@ -112,15 +112,15 @@ const ProductPage: React.FC = () => {
           <div className="flex items-center mb-4">
             {product.price?.price === product.price?.discountedPrice ? (
               <span className="text-2xl font-semibold">
-                ${product.price?.price}
+                €{product.price?.price}
               </span>
             ) : (
               <div className="flex items-center">
                 <span className="text-lg text-gray-500 line-through mr-2">
-                  ${product.price?.price}
+                  €{product.price?.price}
                 </span>
                 <span className="text-2xl font-semibold text-red-600">
-                  ${product.price?.discountedPrice}
+                  €{product.price?.discountedPrice}
                 </span>
               </div>
             )}

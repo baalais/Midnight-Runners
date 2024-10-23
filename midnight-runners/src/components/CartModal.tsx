@@ -80,7 +80,7 @@ const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
                             {item.quantity} x{" "}
                           </div>
                         )}
-                        ${item.price?.amount}
+                        €{item.price?.amount}
                       </div>
                     </div>
                     {/* Preces pieejamības statuss */}
@@ -107,7 +107,7 @@ const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
           <div className="">
             <div className="flex items-center justify-between font-semibold text-black">
               <span>Subtotal</span>
-              <span>${cart.subtotal.amount}</span> {/* Kopējā groza summa */}
+              <span>€{cart.subtotal.amount}</span> {/* Kopējā groza summa */}
             </div>
             <p className="text-gray-500 text-sm mt-2 mb-4">
               Shipping and taxes calculated at checkout.

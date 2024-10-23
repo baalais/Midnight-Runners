@@ -6,9 +6,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// wixClientServer.tsx (Apvienojot visu kopā)
 
-// Importē nepieciešamās atkarības
 "use client";
 
 import { createClient, OAuthStrategy } from "@wix/sdk";
@@ -56,23 +54,23 @@ export const WixClientContextProvider = ({
 };
 
 // Funkcija, lai iegūtu produktus no Wix API
-export const wixClientServer = async () => {
-  try {
-    const response = await fetch('YOUR_API_URL'); // Nodrošiniet pareizu API izsaukumu
-    const textData = await response.text(); // Iegūstiet neapstrādātu teksta atbildi
+// export const wixClientServer = async () => {
+//   try {
+//     const response = await fetch('YOUR_API_URL'); // Nodrošiniet pareizu API izsaukumu
+//     const textData = await response.text(); // Iegūstiet neapstrādātu teksta atbildi
 
-    // Atkodējiet datus, ja tie ir URL-iekodēti
-    const decodedData = decodeURIComponent(textData);
+//     // Atkodējiet datus, ja tie ir URL-iekodēti
+//     const decodedData = decodeURIComponent(textData);
 
-    // Pārvērst atkodētos datus par JSON
-    const jsonData = JSON.parse(decodedData);
+//     // Pārvērst atkodētos datus par JSON
+//     const jsonData = JSON.parse(decodedData);
 
-    return jsonData;  // Atgriežot analizēto objektu
-  } catch (error) {
-    console.error('Error in wixClientServer:', error);
-    throw error;
-  }
-};
+//     return jsonData;  // Atgriežot analizēto objektu
+//   } catch (error) {
+//     console.error('Error in wixClientServer:', error);
+//     throw error;
+//   }
+// };
 
 // React komponents produktu iegūšanai un attēlošanai
 const ProductList = ({
@@ -88,22 +86,22 @@ const ProductList = ({
   const [products, setProducts] = useState([]); // Saglabā produktus
 
   // Iegūt produktus, izmantojot useEffect
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true); // Sāk ielādi
-      try {
-        const wixClient = await wixClientServer();
-        // Šeit varat apstrādāt produktu vaicājuma loģiku, iestatot rezultātu uz stāvokli
-        setProducts(wixClient.products || []); // Saglabā produktus
-      } catch (error) {
-        console.error("Error fetching products:", error); // Kļūdu apstrāde
-      } finally {
-        setLoading(false); // Beidz ielādi
-      }
-    };
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     setLoading(true); // Sāk ielādi
+  //     try {
+  //       const wixClient = await wixClientServer();
+  //       // Šeit varat apstrādāt produktu vaicājuma loģiku, iestatot rezultātu uz stāvokli
+  //       setProducts(wixClient.products || []); // Saglabā produktus
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error); // Kļūdu apstrāde
+  //     } finally {
+  //       setLoading(false); // Beidz ielādi
+  //     }
+  //   };
 
-    fetchProducts(); // Izsauc produktu iegūšanas funkciju
-  }, [categoryId, limit, searchParams]);
+  //   fetchProducts(); // Izsauc produktu iegūšanas funkciju
+  // }, [categoryId, limit, searchParams]);
 
   return (
     <div>
