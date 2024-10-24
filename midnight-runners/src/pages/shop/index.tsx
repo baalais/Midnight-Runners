@@ -12,48 +12,56 @@ import Footer from "~/components/footer";
 const PRODUCTS_PER_PAGE = 100;
 
 const ProductList = () => {
-  const wixClient = useWixClient();
+  const { wixClient, clientReady } = useWixClient();
   const [productsData, setProductsData] = useState<products.Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Funkcija produktu iegūšanai
-  const fetchProducts = async (page: number) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await wixClient.products
-        .queryProducts()
-        .limit(PRODUCTS_PER_PAGE)
-        .skip((page - 1) * PRODUCTS_PER_PAGE)
-        .find();
-
-      setProductsData(response.items); // Saglabā iegūtos produktus
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setError("Failed to fetch products. Please try again later."); // Iestatīt kļūdas ziņojumu
-    } finally {
-      setLoading(false); // Beigt ielādes stāvokli
-    }
-  };
-
-  // Izsaukt funkciju produktu iegūšanai, kad mainās lapa
   useEffect(() => {
-    fetchProducts(currentPage);
-  }, [currentPage, wixClient]);
+    const fetchProducts = async () => {
+      if (!clientReady || !wixClient) {
+        console.warn("Wix client is not ready.");
+        return; // Early return if client is not ready
+      }
 
-  // Ja ielādē, parādīt ielādes komponentu
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await wixClient.products
+          .queryProducts()
+          .limit(PRODUCTS_PER_PAGE)
+          .skip((currentPage - 1) * PRODUCTS_PER_PAGE)
+          .find();
+
+        setProductsData(response.items);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError("Failed to fetch products. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const checkClientReady = () => {
+      if (clientReady && wixClient) {
+        fetchProducts();
+      } else {
+        setTimeout(checkClientReady, 100); // Retry after 100ms
+      }
+    };
+
+    checkClientReady(); // Start checking if the client is ready
+  }, [currentPage, wixClient, clientReady]); // Dependency on clientReady
+
   if (loading) return <Loading />;
-  // Ja ir kļūda, parādīt kļūdas ziņojumu
-  if (error) return <p>{error}</p>;
+  if (error) return <p className="text-center text-red-600">{error}</p>;
 
   return (
     <div>
       <Header />
-      {/* Pielāgojiet padding atkarībā no jūsu galvenes augstuma */}
-      <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 pt-20"> {/* Palieliniet pt vērtību, ja nepieciešams */}
+      <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 pt-20">
         <h1 className="text-4xl font-medium mb-6">All Products</h1>
         <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
           {productsData.map((product) => (
@@ -93,8 +101,12 @@ const ProductList = () => {
             </Link>
           ))}
         </div>
-        {/* Pagination komponenta, pašreizējā lapa, iepriekšējā un nākamā lapa */}
-        <Pagination currentPage={0} hasPrev={false} hasNext={false} />
+        <Pagination
+          currentPage={currentPage}
+          hasPrev={currentPage > 1}
+          hasNext={productsData.length === PRODUCTS_PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
       </div>
       <Footer />
     </div>

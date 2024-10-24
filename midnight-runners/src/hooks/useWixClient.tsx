@@ -10,27 +10,13 @@ export const useWixClient = () => {
   const [clientReady, setClientReady] = useState(false);
 
   useEffect(() => {
-    if (!wixClient) {
-      console.warn("Wix client is not yet initialized.");
-    } else {
+    if (wixClient) {
       console.log("Wix client is initialized:", wixClient);
       setClientReady(true);
+    } else {
+      console.warn("Wix client is not yet initialized.");
     }
   }, [wixClient]);
 
-  // Access the token client-side for debugging
-  useEffect(() => {
-    const refreshToken = Cookies.get("refreshToken");
-    if (!refreshToken) {
-      console.warn("No refreshToken found in client-side cookies.");
-    } else {
-      console.log("Client-side refreshToken:", refreshToken);
-    }
-  }, []);
-
-  if (!clientReady) {
-    return null; // Optionally return a loading state while initializing
-  }
-
-  return wixClient;
+  return { wixClient: clientReady ? wixClient : null, clientReady };
 };
