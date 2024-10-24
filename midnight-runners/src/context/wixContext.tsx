@@ -1,12 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports */
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 "use client";
 
 import { createClient, OAuthStrategy } from "@wix/sdk";
@@ -16,106 +7,79 @@ import Cookies from "js-cookie";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { redirects } from '@wix/redirects';
 
-// Iestata Wix klientu, izmantojot OAuthStrategy
-const refreshToken = JSON.parse(Cookies.get("refreshToken") || "{}");
+// Function to handle the token retrieval on the client-side
+const getRefreshToken = async () => {
+  const refreshToken = Cookies.get("refreshToken");
+  if (!refreshToken) {
+    console.log("No refreshToken found in client-side cookies. Requesting new token from server.");
 
-const wixClient = createClient({
-  modules: {
-    products,
-    collections,
-    currentCart,
-    redirects
-  },
-  auth: OAuthStrategy({
-    clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID!,
-    tokens: {
-      refreshToken,
-      accessToken: { value: "", expiresAt: 0 },
+    try {
+      const response = await fetch('http://localhost:3000/api/wix');
+      const data = await response.json();
+      console.log("API Response:", data);
+      if (data.token?.refreshToken) {
+        Cookies.set("refreshToken", JSON.stringify(data.token.refreshToken), { expires: 7, path: "/" });
+        return data.token.refreshToken;
+      }
+    } catch (error) {
+      console.error("API fetch error:", error);
+    }
+  } else {
+    console.log("Client-side refreshToken:", refreshToken);
+    return JSON.parse(refreshToken);
+  }
+
+  return null;
+};
+
+// Initialize Wix client with OAuth strategy
+const initializeWixClient = async () => {
+  const refreshToken = await getRefreshToken();
+
+  return createClient({
+    modules: {
+      products,
+      collections,
+      currentCart,
+      redirects,
     },
-  }),
-});
+    auth: OAuthStrategy({
+      clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID!,
+      tokens: {
+        refreshToken: refreshToken || { value: "", expiresAt: 0 },
+        accessToken: { value: "", expiresAt: 0 },
+      },
+    }),
+  });
+};
 
-// Izveido WixClient kontekstu
-export type WixClient = typeof wixClient;
+export type WixClient = Awaited<ReturnType<typeof initializeWixClient>>;
+export const WixClientContext = createContext<WixClient | null>(null);
 
-export const WixClientContext = createContext<WixClient>(wixClient);
-
-// Konteksta nodrošinātāja komponents
 export const WixClientContextProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
+  const [wixClient, setWixClient] = useState<WixClient | null>(null);
+
+  // Fetch the token and initialize Wix client on component mount
+  useEffect(() => {
+    const initializeClient = async () => {
+      const client = await initializeWixClient();
+      setWixClient(client);
+    };
+
+    initializeClient();
+  }, []);
+
+  if (!wixClient) {
+    return <div>Loading...</div>; // Optional loading UI
+  }
+
   return (
     <WixClientContext.Provider value={wixClient}>
       {children}
     </WixClientContext.Provider>
   );
 };
-
-// Funkcija, lai iegūtu produktus no Wix API
-// export const wixClientServer = async () => {
-//   try {
-//     const response = await fetch('YOUR_API_URL'); // Nodrošiniet pareizu API izsaukumu
-//     const textData = await response.text(); // Iegūstiet neapstrādātu teksta atbildi
-
-//     // Atkodējiet datus, ja tie ir URL-iekodēti
-//     const decodedData = decodeURIComponent(textData);
-
-//     // Pārvērst atkodētos datus par JSON
-//     const jsonData = JSON.parse(decodedData);
-
-//     return jsonData;  // Atgriežot analizēto objektu
-//   } catch (error) {
-//     console.error('Error in wixClientServer:', error);
-//     throw error;
-//   }
-// };
-
-// React komponents produktu iegūšanai un attēlošanai
-const ProductList = ({
-  categoryId,
-  limit,
-  searchParams,
-}: {
-  categoryId: string;
-  limit?: number;
-  searchParams?: any;
-}) => {
-  const [loading, setLoading] = useState(false); // Ielādes statuss
-  const [products, setProducts] = useState([]); // Saglabā produktus
-
-  // Iegūt produktus, izmantojot useEffect
-  // useEffect(() => {
-  //   const fetchProducts = async () => {
-  //     setLoading(true); // Sāk ielādi
-  //     try {
-  //       const wixClient = await wixClientServer();
-  //       // Šeit varat apstrādāt produktu vaicājuma loģiku, iestatot rezultātu uz stāvokli
-  //       setProducts(wixClient.products || []); // Saglabā produktus
-  //     } catch (error) {
-  //       console.error("Error fetching products:", error); // Kļūdu apstrāde
-  //     } finally {
-  //       setLoading(false); // Beidz ielādi
-  //     }
-  //   };
-
-  //   fetchProducts(); // Izsauc produktu iegūšanas funkciju
-  // }, [categoryId, limit, searchParams]);
-
-  return (
-    <div>
-      {loading ? (
-        <p>Loading products...</p> // Ielādes ziņojums
-      ) : (
-        <ul>
-          {products.map((product: any) => (
-            <li key={product._id}>{product.name}</li> // Attēlo produktus
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
-
-export default ProductList;

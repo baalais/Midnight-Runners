@@ -1,15 +1,10 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-"use client";
-
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import CartModal from "./CartModal";
 import { useWixClient } from "../hooks/useWixClient";
 import Cookies from "js-cookie";
 import { useCartStore } from "../hooks/useCartStore";
 import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false); // Statuss groza modalitātes atvēršanai/aizvēršanai
@@ -19,6 +14,13 @@ const NavIcons = () => {
   const pathName = usePathname(); // Ceļa nosaukuma iegūšana
 
   const wixClient = useWixClient(); // Wix klienta objekta iegūšana
+
+  // Check if wixClient is null or uninitialized
+  if (!wixClient || !wixClient.auth) {
+    console.log("Wix client not initialized yet");
+    return null; // Return null or a loading state while the client initializes
+  }
+
   const isLoggedIn = wixClient.auth.loggedIn(); // Pārbaude, vai lietotājs ir pieteicies
 
   // Funkcija lietotāja izrakstīšanai
@@ -33,7 +35,9 @@ const NavIcons = () => {
   const { cart, counter, getCart } = useCartStore(); // Groza stāvokļa pārvaldība
 
   useEffect(() => {
-    getCart(wixClient); // Saņem groza datus no Wix klienta
+    if (wixClient) {
+      getCart(wixClient); // Saņem groza datus no Wix klienta
+    }
   }, [wixClient, getCart]);
 
   // Funkcija, lai aizvērtu CartModal
