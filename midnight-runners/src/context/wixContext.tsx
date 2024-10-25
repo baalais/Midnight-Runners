@@ -3,7 +3,7 @@ import { createClient, OAuthStrategy } from "@wix/sdk";
 import { products, collections } from "@wix/stores";
 import { cart as currentCart } from "@wix/ecom"; // Ensure correct import
 import Cookies from "js-cookie";
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { redirects } from "@wix/redirects";
 
 // Function to handle the token retrieval on the client-side

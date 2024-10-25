@@ -6,14 +6,26 @@ import CartModal from "../components/CartModal";
 
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const { cart, counter, getCart, isLoading } = useCartStore(); // Get isLoading from the store
-  const wixClient = useWixClient();
+  const { cart, counter, getCart, isLoading } = useCartStore();
+  const { wixClient, clientReady } = useWixClient();
 
   useEffect(() => {
-    if (wixClient && counter === 0 && !isLoading) {
-      getCart(wixClient);
+    let isMounted = true; 
+
+    const fetchCart = async () => {
+      if (wixClient && clientReady && counter === 0 && !isLoading) {
+        await getCart(wixClient);
+      }
+    };
+
+    if (isMounted) {
+      fetchCart();
     }
-  }, [wixClient, counter, isLoading, getCart]); // Add isLoading to dependencies
+
+    return () => {
+      isMounted = false;
+    };
+  }, [wixClient, clientReady]); // Only re-run when `wixClient` or `clientReady` change
 
   const handleCloseCartModal = () => {
     setIsCartOpen(false);

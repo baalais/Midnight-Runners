@@ -7,7 +7,7 @@ export function parseInstance(instance: string, appSecret: string) {
   if (!payload) {
     return null;
   }
-  if (!validateInstance(hash, payload, appSecret)) {
+  if (!hash || !validateInstance(hash, payload, appSecret)) {
     return null;
   }
   return JSON.parse(base64Decode(payload, "utf8"));

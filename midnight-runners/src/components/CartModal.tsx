@@ -2,35 +2,40 @@ import { useCartStore } from '../hooks/useCartStore';
 import { useWixClient } from '../hooks/useWixClient';
 import { useEffect } from 'react';
 
-const CartModal: React.FC = () => {
-    const { cart, getCart, removeItem, isLoading } = useCartStore();
-    const wixClient = useWixClient();
+interface CartModalProps {
+  onClose: () => void;
+}
 
-    useEffect(() => {
-        if (wixClient) {
-            getCart(wixClient);
-        }
-    }, [getCart, wixClient]);
+const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
+  const { cart, getCart, removeItem, isLoading } = useCartStore();
+  const { wixClient, clientReady } = useWixClient();
 
-    if (isLoading) return <div>Loading...</div>;
+  useEffect(() => {
+    if (wixClient && clientReady) {
+      getCart(wixClient);
+    }
+  }, [wixClient, clientReady, getCart]); // Ensure dependencies are correctly listed
 
-    return (
-        <div className="modal">
-            <h2>Your Cart</h2>
-            {cart?.lineItems?.length ? (
-                cart.lineItems.map((item) => (
-                    <div key={item.catalogReference?.catalogItemId} className="cart-item">
-                        <span>{item.name}</span>
-                        <button onClick={() => removeItem(wixClient, item.catalogReference?.catalogItemId || '')}>
-                            Remove
-                        </button>
-                    </div>
-                ))
-            ) : (
-                <p>Your cart is empty.</p>
-            )}
-        </div>
-    );
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div className="modal">
+      <button onClick={onClose} className="close-button">Close</button>
+      <h2>Your Cart</h2>
+      {cart?.lineItems?.length ? (
+        cart.lineItems.map((item) => (
+          <div key={item.catalogReference?.catalogItemId} className="cart-item">
+            <span>{String(item.productName ?? 'Unnamed Product')}</span>
+            <button onClick={() => wixClient && removeItem(wixClient, item.catalogReference?.catalogItemId || '')}>
+              Remove
+            </button>
+          </div>
+        ))
+      ) : (
+        <p>Your cart is empty.</p>
+      )}
+    </div>
+  );
 };
 
 export default CartModal;
