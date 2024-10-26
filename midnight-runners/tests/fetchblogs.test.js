@@ -1,19 +1,10 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import { test, expect } from '@playwright/test';
 import { fetchBlogs } from '../src/utils/fetchBlogs';
 
 test.describe('fetchBlogs function tests', () => {
-  test('should return blog posts with title and content successfully',
-async ({ page }) => {
-    // Mock the API response with additional fields
-    await page.route('https://www.midnightrunners.club/_functions/blogPosts',
-route => {
+  test('should return blog posts with title and content successfully', async ({ page }) => {
+    // Mocko API atbildi ar papildus laukiem
+    await page.route('https://www.midnightrunners.club/_functions/blogPosts', route => {
       route.fulfill({
         status: 200,
         body: JSON.stringify({
@@ -33,10 +24,10 @@ route => {
       });
     });
 
-    // Call the fetchBlogs function
+    // Izsaucam fetchBlogs funkciju
     const blogs = await fetchBlogs();
 
-    // Check if each blog post contains title and content
+    // Pārbaudām, vai katrs bloga ieraksts satur virsrakstu un saturu
     blogs.forEach(blog => {
       expect(blog).toHaveProperty('slug');
       expect(blog).toHaveProperty('plainContent');
