@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useWixClient } from "../../hooks/useWixClient";
@@ -11,6 +14,7 @@ import Header from "~/components/header";
 import Footer from "~/components/footer";
 import Loading from "../../components/Loading";
 
+// Definē mediju un produkta struktūru
 interface Media {
   mainMedia?: {
     image?: {
@@ -40,83 +44,100 @@ interface Product {
   };
 }
 
+// Galvenā ProductPage komponente
 const ProductPage: React.FC = () => {
   const router = useRouter();
-  const { slug } = router.query;
-  const { wixClient, clientReady } = useWixClient();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isCartModalOpen, setCartModalOpen] = useState(false);
+  const { slug } = router.query; // Iegūst produkta slug no URL
+  const { wixClient, clientReady } = useWixClient(); // Iegūst Wix klientu un tā gatavības statusu
+  const [product, setProduct] = useState<Product | null>(null); // Stāvoklis, lai turētu iegūto produktu
+  const [loading, setLoading] = useState(true); // Ielādes stāvoklis
+  const [error, setError] = useState<string | null>(null); // Kļūdu stāvoklis
+  const [isCartModalOpen, setCartModalOpen] = useState(false); // Stāvoklis, lai pārvaldītu iepirkumu modālā loga redzamību
 
+  // Efekts, lai iegūtu produkta datus, kad slug vai klienta statuss mainās
   useEffect(() => {
     const fetchProduct = async () => {
+      // Agrīna atgriešanās, ja atkarības nav gatavas
       if (!slug || !clientReady || !wixClient) return;
-      setLoading(true);
-      setError(null);
+
+      setLoading(true); // Iestata ielādes statusu uz true pirms iegūšanas
+      setError(null); // Atiestata kļūdu stāvokli
+
       try {
+        // Vaicā Wix par produktu, pamatojoties uz slug
         const productsResponse = await wixClient.products
           .queryProducts()
           .eq("slug", slug as string)
           .find();
+
+        // Pārbauda, vai produkts tika atrasts
         if (!productsResponse.items.length) {
-          setError("Product not found.");
+          setError("Produkts nav atrasts. Lūdzu, pārbaudiet URL vai mēģiniet vēlreiz.");
           return;
         }
-        const productData = productsResponse.items[0];
-        if (productData) {
-          const transformedProduct: Product = {
-            name: productData.name || "Unnamed Product",
-            media: {
-              mainMedia: {
-                image: {
-                  url: productData.media?.mainMedia?.image?.url || "/default-image.png"
-                }
-              }
+
+        const productData = productsResponse.items[0]; // Iegūst pirmo produktu
+
+        // Pārvērš produkta datus noteiktajā struktūrā
+        const transformedProduct: Product = {
+          name: productData.name || "Neievadīts produkts",
+          media: {
+            mainMedia: {
+              image: {
+                url: productData.media?.mainMedia?.image?.url || "/default-image.png",
+              },
             },
-            description: productData.description || "No description available",
-            price: productData.price ? {
-              price: productData.price.price || 0,
-              discountedPrice: productData.price.discountedPrice
-            } : undefined,
-            variants: productData.variants,
-            productOptions: productData.productOptions,
-            additionalInfoSections: productData.additionalInfoSections?.map(section => ({
-              title: section.title || "No title",
-              description: section.description || "No description"
-            })) || [],
-            _id: productData._id,
-            brand: productData.brand
-          };
-          setProduct(transformedProduct);
-        }
+          },
+          description: productData.description || "Nav pieejama apraksta informācija",
+          price: productData.price
+            ? {
+                price: productData.price.price || 0,
+                discountedPrice: productData.price.discountedPrice,
+              }
+            : undefined,
+          variants: productData.variants,
+          productOptions: productData.productOptions,
+          additionalInfoSections: productData.additionalInfoSections?.map((section) => ({
+            title: section.title || "Bez virsraksta",
+            description: section.description || "Bez apraksta",
+          })) || [],
+          _id: productData._id,
+          brand: productData.brand,
+          stock: productData.stock,
+        };
+
+        setProduct(transformedProduct); // Atjaunina produkta stāvokli
       } catch (error) {
-        console.error("Error fetching product:", error);
-        setError("Failed to fetch product. Please try again later.");
+        console.error("Kļūda, iegūstot produktu:", error);
+        setError("Neizdevās iegūt produktu. Lūdzu, pārbaudiet interneta savienojumu un mēģiniet vēlreiz.");
       } finally {
-        setLoading(false);
+        setLoading(false); // Iestata ielādes statusu uz false pēc mēģinājuma
       }
     };
 
-    fetchProduct();
-  }, [slug, wixClient, clientReady]);
+    fetchProduct(); // Izsauc funkciju, lai iegūtu produktu
+  }, [slug, wixClient, clientReady]); // Atkarības, kas izsauc efektu
 
+  // Attēlo ielādes stāvokli
   if (loading) return <Loading />;
+  // Attēlo kļūdas ziņojumu
   if (error) return <p className="text-center text-red-600">{error}</p>;
-  if (!product) return <p className="text-center text-lg">Product not found.</p>;
+  // Attēlo ziņojumu, ja produkts nav atrasts
+  if (!product) return <p className="text-center text-lg">Produkts nav atrasts.</p>;
 
+  // Funkcija, lai pārslēgtu iepirkumu modālā loga redzamību
   const toggleCartModal = () => {
     setCartModalOpen((prev) => !prev);
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header /> {/* Attēlo galveni */}
       <div className="flex-grow container mx-auto px-4 md:px-8 pt-20 lg:flex lg:flex-row lg:items-start">
         <div className="w-full lg:w-1/2 lg:sticky top-20">
           <Image
             src={product.media.mainMedia?.image?.url || "/product.png"}
-            alt={product.name || "Product Image"}
+            alt={product.name || "Produkta attēls"}
             width={600}
             height={600}
             className="rounded-lg shadow-lg max-h-90 object-cover"
@@ -126,7 +147,7 @@ const ProductPage: React.FC = () => {
           <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
           <p
             className="text-gray-700 mb-4"
-            dangerouslySetInnerHTML={{ __html: product.description }}
+            dangerouslySetInnerHTML={{ __html: product.description }} // Attēlo HTML aprakstu
           />
           <div className="flex items-center mb-4">
             {product.price && product.price.price === product.price.discountedPrice ? (
@@ -155,8 +176,8 @@ const ProductPage: React.FC = () => {
           ) : (
             <Add
               productId={product._id!}
-              variantId="00000000-0000-0000-0000-000000000000"
-              stockNumber={product.stock?.quantity || 0}
+              variantId="00000000-0000-0000-0000-000000000000" // Noklusējuma variantu ID
+              stockNumber={product.stock?.quantity || 0} // Krājuma daudzums
             />
           )}
           <div className="my-6 border-t border-gray-300" />
@@ -167,12 +188,12 @@ const ProductPage: React.FC = () => {
             </div>
           ))}
           <div className="my-6 border-t border-gray-300" />
-          <h1 className="text-2xl font-semibold mt-4">User Reviews</h1>
+          <h1 className="text-2xl font-semibold mt-4">Lietotāju atsauksmes</h1>
           <Reviews productId={product._id!} />
         </div>
-        {isCartModalOpen && <CartModal onClose={toggleCartModal} />}
+        {isCartModalOpen && <CartModal onClose={toggleCartModal} />} {/* Attēlo iepirkumu modālo logu, ja tas ir atvērts */}
       </div>
-      <Footer />
+      <Footer /> {/* Attēlo kājējo informāciju */}
     </div>
   );
 };

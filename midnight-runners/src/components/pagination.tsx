@@ -1,13 +1,14 @@
-// components/Pagination.tsx
 import React from 'react';
 
+// Definē PaginationProps interfeisu
 interface PaginationProps {
-  currentPage: number;
-  hasPrev: boolean;
-  hasNext: boolean;
+  currentPage: number; // Pašreizējās lapas numurs
+  hasPrev: boolean; // Vai ir iepriekšējā lapa
+  hasNext: boolean; // Vai ir nākamā lapa
   onPageChange: (page: number) => void; // Funkcija lapas maiņas apstrādei
 }
 
+// Pagination komponente
 const Pagination: React.FC<PaginationProps> = ({ currentPage, hasPrev, hasNext, onPageChange }) => {
   return (
     <div className="flex justify-center mt-4">
@@ -29,4 +30,4 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, hasPrev, hasNext, 
   );
 };
 
-export default Pagination;
+export default Pagination; // Eksportē Pagination komponenti

@@ -1,5 +1,6 @@
 import React from "react";
 
+// Loading komponente
 const Loading: React.FC = () => {
   return (
     // Galvenais konteiners, kas izkārto elementus centrā vertikāli un horizontāli
@@ -12,4 +13,4 @@ const Loading: React.FC = () => {
   );
 };
 
-export default Loading;
+export default Loading; // Eksportē Loading komponenti

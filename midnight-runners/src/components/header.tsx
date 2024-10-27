@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import NavIcons from "./NavIcons";
 
+// Header komponente
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false); // Stāvoklis izvēlnes atvēršanai/aizvēršanai
 
@@ -29,7 +30,7 @@ const Header: React.FC = () => {
       {/* Navigācijas saites */}
       <nav
         className={`${
-          isOpen ? "flex" : "hidden"
+          isOpen ? "flex" : "hidden" // Ja izvēlne ir atvērta, parādīt, pretējā gadījumā slēpt
         } md:flex flex-col md:flex-row absolute md:static top-16 left-0 right-0 w-full md:w-auto bg-gray-800 md:bg-transparent items-center md:items-start md:gap-4 gap-8 p-5 md:p-0`}
       >
         <Link href="/" passHref>
@@ -59,4 +60,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+export default Header; // Eksportē Header komponenti

@@ -1,5 +1,6 @@
 import React from "react";
 
+// Komponente, kas nosaka lapas galveno informāciju
 export default function Head() {
   return (
     <React.Fragment>
