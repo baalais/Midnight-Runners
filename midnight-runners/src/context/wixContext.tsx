@@ -7,7 +7,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import { redirects } from "@wix/redirects";
 
 // Function to handle the token retrieval on the client-side
-const getRefreshToken = async () => {
+export const getRefreshToken = async () => {
     const refreshToken = Cookies.get("refreshToken");
     if (!refreshToken) {
         console.log("No refreshToken found. Requesting new token from server.");
