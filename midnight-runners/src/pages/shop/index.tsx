@@ -1,90 +1,74 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import React, { useEffect, useState } from "react";
-import { useWixClient } from "../../hooks/useWixClient";
-import { products } from "@wix/stores";
+import { fetchProducts } from "../../utils/fetchProducts"; // Make sure to create this function to call your API
 import Image from "next/image";
 import Link from "next/link";
-import DOMPurify from "isomorphic-dompurify";
 import Pagination from "../../components/pagination";
 import Loading from "../../components/Loading";
 import Header from "~/components/header";
 import Footer from "~/components/footer";
 
-const PRODUCTS_PER_PAGE = 100; // Definē, cik produkti jāparāda vienā lapā
+const PRODUCTS_PER_PAGE = 100; // Define how many products to display per page
 
-// Galvenā ProductList komponente
-const ProductList = () => {
-  const { wixClient, clientReady } = useWixClient(); // Iegūst Wix klientu un tā gatavības statusu
-  const [productsData, setProductsData] = useState<products.Product[]>([]); // Stāvoklis, lai turētu produktu datus
-  const [loading, setLoading] = useState(true); // Ielādes stāvoklis
-  const [error, setError] = useState<string | null>(null); // Kļūdu stāvoklis
-  const [currentPage, setCurrentPage] = useState(1); // Aktuālā lapa
+// Main ProductList component
+const ProductList: React.FC = () => {
+  const [productsData, setProductsData] = useState<any[]>([]); // State to hold product data
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
+  const [currentPage, setCurrentPage] = useState(1); // Current page
 
-  // Efekts, lai iegūtu produktus, kad mainās lapas numurs vai klienta gatavības statuss
+  // Effect to fetch products when the page changes
   useEffect(() => {
     const fetchProducts = async () => {
-      // Agrīna atgriešanās, ja klients nav gatavs
-      if (!clientReady || !wixClient) {
-        console.warn("Wix klients nav gatavs.");
-        return;
-      }
-
-      setLoading(true); // Iestata ielādes statusu uz true
-      setError(null); // Atiestata kļūdu stāvokli
+      setLoading(true); // Set loading state to true
+      setError(null); // Reset error state
 
       try {
-        // Vaicā Wix par produktiem ar lapas ierobežojumiem
-        const response = await wixClient.products
-          .queryProducts()
-          .limit(PRODUCTS_PER_PAGE)
-          .skip((currentPage - 1) * PRODUCTS_PER_PAGE)
-          .find();
-
-        setProductsData(response.items); // Iestata iegūtos produktus stāvoklī
+        const response = await fetch("https://www.midnightrunners.club/_functions/get_products?page=" + currentPage); // Adjust the API URL as necessary
+        const data = await response.json();
+        
+        if (response.ok) {
+          setProductsData(data.items); // Set fetched products to state
+        } else {
+          throw new Error(data.message || "Failed to fetch products");
+        }
       } catch (error) {
-        console.error("Kļūda, iegūstot produktus:", error);
-        setError("Neizdevās iegūt produktus. Lūdzu, mēģiniet vēlreiz vēlāk.");
+        console.error("Error fetching products:", error);
+        setError("Failed to fetch products. Please try again later."); // Set error message
       } finally {
-        setLoading(false); // Iestata ielādes statusu uz false
+        setLoading(false); // Set loading state to false
       }
     };
 
-    const checkClientReady = () => {
-      // Pārbauda, vai klients ir gatavs, un, ja jā, izsauc produktu iegūšanas funkciju
-      if (clientReady && wixClient) {
-        fetchProducts();
-      } else {
-        setTimeout(checkClientReady, 100); // Mēģina vēlreiz pēc 100ms
-      }
-    };
+    fetchProducts(); // Call the fetch function
+  }, [currentPage]); // Re-run when currentPage changes
 
-    checkClientReady(); // Sāk pārbaudīt, vai klients ir gatavs
-  }, [currentPage, wixClient, clientReady]); // Atkarības, kas izsauc efektu
-
-  // Attēlo ielādes stāvokli
+  // Display loading state
   if (loading) return <Loading />;
-  // Attēlo kļūdas ziņojumu
+  // Display error message
   if (error) return <p className="text-center text-red-600">{error}</p>;
 
   return (
     <div>
-      <Header /> {/* Attēlo galveni */}
+      <Header /> {/* Display header */}
       <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 pt-20">
-        <h1 className="text-4xl font-medium mb-6">Visi produkti</h1> {/* Galvenais virsraksts */}
+        <h1 className="text-4xl font-medium mb-6">All Products</h1> {/* Main title */}
         <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
           {productsData.map((product) => (
             <Link
-              href={`/shop/${product.slug}`} // Pāreja uz produkta lapu
+              href={`/shop/${product.slug}`} // Navigate to product page
               className="w-full flex flex-col gap-4 sm:w-[45%] lg:w-[22%]"
               key={product._id}
             >
               <div className="relative w-full h-80">
                 <Image
-                  src={product.media?.mainMedia?.image?.url || "/product.png"}
-                  alt={product.name || "Produkta nosaukums"}
+                  src={product.mainMedia.replace('wix:image://', 'https://static.wixstatic.com/media/')} // Format the image URL
+                  alt={product.name || "Product Name"}
                   fill
                   sizes="25vw"
                   className="absolute object-cover rounded-md"
@@ -92,34 +76,27 @@ const ProductList = () => {
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">{product.name}</span>
-                <span className="font-semibold">€{product.price?.price}</span>
+                <span className="font-semibold">€{product.price}</span>
               </div>
               {product.additionalInfoSections && (
-                <div
-                  className="text-sm text-gray-500"
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(
-                      product.additionalInfoSections.find(
-                        (section: any) => section.title === "shortDesc"
-                      )?.description || ""
-                    ),
-                  }}
-                />
+                <div className="text-sm text-gray-500">
+                  {product.additionalInfoSections.find((section: any) => section.title === "PRODUCT INFO")?.description}
+                </div>
               )}
               <button className="rounded-2xl ring-1 ring-blue-500 text-blue-500 w-max py-2 px-4 text-xs hover:bg-blue-500 hover:text-white">
-                Pievienot grozam
-              </button> {/* Poga, lai pievienotu produktu grozam */}
+                Add to Cart
+              </button> {/* Button to add product to cart */}
             </Link>
           ))}
         </div>
         <Pagination
           currentPage={currentPage}
-          hasPrev={currentPage > 1} // Pārbauda, vai ir iepriekšējā lapa
-          hasNext={productsData.length === PRODUCTS_PER_PAGE} // Pārbauda, vai ir nākamā lapa
-          onPageChange={setCurrentPage} // Funkcija lapas maiņai
+          hasPrev={currentPage > 1} // Check if there is a previous page
+          hasNext={productsData.length === PRODUCTS_PER_PAGE} // Check if there is a next page
+          onPageChange={setCurrentPage} // Function to change page
         />
       </div>
-      <Footer /> {/* Attēlo kājējo informāciju */}
+      <Footer /> {/* Display footer */}
     </div>
   );
 };
